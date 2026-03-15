@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Code Complexity Analyzer</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #333;
+    margin-top: 20px;
+  }
+
+  textarea {
+    width: 80%;
+    max-width: 900px;
+    height: 220px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-top: 20px;
+    resize: vertical;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  button {
+    padding: 12px 25px;
+    font-size: 16px;
+    margin-top: 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #4f46e5;
+    color: white;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  button:hover {
+    background: #4338ca;
+    transform: scale(1.05);
+  }
+
+  .result {
+    width: 80%;
+    max-width: 900px;
+    background: #ffffff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    white-space: pre-wrap;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  /* ---------- Headings styling ---------- */
+  .result h3 {
+    color: #111; /* dark color */
+    font-weight: bold;
+    text-decoration: underline;
+    margin-top: 12px;
+    margin-bottom: 5px;
+  }
+
+  .result p, .result ul {
+    margin: 4px 0;
+  }
+
+  /* ---------- Code block styling ---------- */
+  /* ---------- Make static analysis blocks compact ---------- */
+.result pre {
+  background: #f5f5f5;
+  padding: 6px 8px;        /* smaller padding */
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;         /* slightly smaller font */
+  color: #1a1a1a;
+  margin: 2px 0;           /* less vertical spacing */
+  line-height: 1.3;        /* tighter lines */
+  white-space: pre-wrap;   /* wrap long lines */
+  word-break: break-word;
+}
+
+/* Reduce spacing between headings and code */
+.result h3 {
+  margin-top: 8px;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+.alt-algo {
+  color: black;
+  font-size: 1em;
+  font-weight: 500;
+}
+  footer {
+    margin-top: 40px;
+    color: #777;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    textarea, .result {
+      width: 90%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>AI Code Complexity Analyzer</h1>
+
+<textarea id="code" placeholder="Paste your Python code here..."></textarea>
+<button onclick="analyze()">Analyze Code</button>
+
+<h2>Static Analysis</h2>
+<div class="result" id="result">Your static analysis will appear here...</div>
+
+<h2>AI Code Review</h2>
+<div class="result" id="ai">AI suggestions and optimized code will appear here...</div>
+
+<footer>&copy; 2026 AI Code Analyzer</footer>
+
+<script>
+async function analyze() {
+  let code = document.getElementById("code").value;
+
+  if (!code.trim()) {
+    alert("Please enter some code to analyze!");
+    return;
+  }
+
+  try {
+    let response = await fetch("/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code })
+    });
+
+    let data = await response.json();
+
+    // ---------- Format Static Analysis ----------
+    let staticText = data.analysis || "No static analysis available.";
+
+    // Convert main sections to headings
+    staticText = staticText.replace(/Total Lines:/g, "<h3>Total Lines:</h3>");
+    staticText = staticText.replace(/Loops:/g, "<h3>Loops:</h3>");
+    staticText = staticText.replace(/Conditions:/g, "<h3>Conditions:</h3>");
+    staticText = staticText.replace(/Functions:/g, "<h3>Functions:</h3>");
+
+    // Wrap following lines in <pre> if they are not headings
+    staticText = staticText.replace(/<h3>(.*?)<\/h3>\s*([\s\S]*?)(?=<h3>|$)/g, (match, p1, p2) => {
+      let codePart = p2.trim() ? `<pre><code>${p2.trim()}</code></pre>` : '';
+      return `<h3>${p1}</h3>${codePart}`;
+    });
+
+    document.getElementById("result").innerHTML = staticText;
+
+    // ---------- Format AI Response ----------
+    // ---------- Format AI Response ----------
+let aiText = data.ai || "";
+
+// Replace headings dynamically
+const headings = [
+  "Algorithm", "Time Complexity", "Suggestions", 
+  "Optimization Type", "Optimized Code", 
+  "Alternative Algorithms", "Why Optimized Code is Better"
+];
+
+headings.forEach(h => {
+  const regex = new RegExp(h + ":", "g");
+  aiText = aiText.replace(regex, `<h3>${h}:</h3>`);
+});
+
+// Wrap code blocks properly without removing any lines
+aiText = aiText.replace(/<h3>Optimized Code:<\/h3>\s*([\s\S]*?)(?=<h3>|$)/g, (match, p1) => {
+  return `<h3>Optimized Code:</h3><pre><code>${p1.trim()}</code></pre>`;
+});
+
+
+aiText = aiText.replace(
+  /(\d+\.\s*)(.+?)(\s*-\s*O\([^)]+\))/g,
+  (match, number, algoName, complexity) => {
+    return `${number}<span class="alt-algo">${algoName.trim()}</span>${complexity}`;
+  }
+);
+// Set the AI div content
+document.getElementById("ai").innerHTML = aiText;
+
+  } catch (error) {
+    document.getElementById("ai").innerText = "Error fetching AI analysis: " + error;
+    document.getElementById("result").innerText = "";
+  }
+}
+</script>
+
+</body>
+</html>
