@@ -46,16 +46,6 @@ Tools like code complexity analyzers help developers understand how efficient or
 4. Click **Analyze**.
 5. View the estimated time complexity and optimization suggestions.
 
-# Project Structure
-
-ai-code-complexity-analyzer
-│
-├── app.py
-├── templates/
-│   └── index.html
-├── key.env
-├── imp.gitignore
-└── README.md
 
 # Future Improvements
 
