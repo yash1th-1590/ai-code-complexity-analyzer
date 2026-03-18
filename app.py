@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 load_dotenv()
 # API configuration
-HF_API_KEY = os.getenv("HF_API_KEY", os.getenv("HF_TOKEN"))
+HF_API_KEY = os.getenv("HF_API_KEY")
 API_URL = "https://router.huggingface.co/v1/chat/completions"
 
 
