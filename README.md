@@ -1,9 +1,6 @@
 # AI Code Complexity Analyzer
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
-[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-API-yellow.svg)](https://huggingface.co/)
-[![License](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
+
 
 An intelligent web application that analyzes Python code for algorithmic complexity, provides AI-powered code reviews, and suggests optimizations while preserving the original algorithm logic.
 
