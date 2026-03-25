@@ -12,29 +12,29 @@ API_URL = "https://router.huggingface.co/v1/chat/completions"
 
 
 # ---------------------------
-# Clean AI Output
+# Clean AI Output - PRESERVE FORMATTING
 # ---------------------------
 def clean_ai_output(ai_text):
-
-    # Remove markdown formatting
+    # Only remove minimal unwanted formatting, preserve structure
+    # Remove excessive markdown code block markers but keep content
     ai_text = ai_text.replace("```python", "").replace("```", "")
-    ai_text = ai_text.replace("**", "")
-
-    # Remove repeated prompt rules if AI echoes them
+    
+    # Remove any stray asterisks that might be formatting but keep meaningful ones
+    ai_text = re.sub(r'\*\*([^*]+)\*\*', r'\1', ai_text)
+    
+    # Remove any repeated prompt rules if AI echoes them (rare)
     ai_text = re.sub(r'Rules:.*?Code to analyze:', '', ai_text, flags=re.DOTALL)
-
-    # Remove unnecessary "However" sentences
-    lines = ai_text.split("\n")
-    cleaned_lines = [line for line in lines if not line.strip().startswith("However")]
-
-    return "\n".join(cleaned_lines).strip()
+    
+    # Trim whitespace
+    ai_text = ai_text.strip()
+    
+    return ai_text
 
 
 # ---------------------------
 # Ask AI for Code Review
 # ---------------------------
 def ask_ai(code):
-
     prompt = f"""
 You are an expert programming assistant.
 
@@ -60,14 +60,8 @@ Optimization Guidelines:
 • Improvements should make the code more readable, efficient, and robust for general cases.
 • The optimization should not focus only on formatting or documentation.
 • Consider improvements in logic clarity, efficiency, and robustness whenever possible.
-Optimization Behavior:
-• Improvements should depend on the given code and should not follow a fixed pattern.
-• Do not always add docstrings or rename variables if they are already clear.
-• Apply improvements only when they meaningfully improve the code.
-• Possible improvements may include readability, performance, robustness, or minor error handling where appropriate.
-• Choose only the improvements that best suit the given code instead of applying all improvements every time.
 
-Response Format (follow strictly):
+Response Format (follow strictly with these exact headings):
 
 Algorithm:
 Explain the algorithm in one clear sentence.
@@ -78,34 +72,22 @@ Provide the Big-O complexity.
 Suggestions:
 1. First improvement suggestion
 2. Second improvement suggestion
-No need to specify the side heading as first and second improvement sujjestion.
 
 Optimization Type:
-It should clearly explain the changes made in the given code to achieve the optimized code.It should give a detailed explanation about the changes in 2 or 3 lines.
+It should clearly explain the changes made in the given code to achieve the optimized code. Give a detailed explanation about the changes in 2 or 3 lines.
 
 Optimized Code:
 Write the FULL optimized working code.
-
-Only output the final optimized code.
 Do not include explanations inside the code block.
+Use proper Python syntax.
 
 Alternative Algorithms:
 List a maximum of 3 alternatives (or fewer if not applicable).
 Give the correct and strictly relevant algorithm names.
 The alternative algorithms should be better than the one used in the given code.
 
-Strict Format:
-Algorithm Name - Complexity - One-line description
-
-Rules for description:
-• The description MUST be only one short line.
-• Maximum 12–15 words.
-• Do NOT write multiple sentences.
-• Do NOT add extra explanations.
-
-Example:
-Binary Search - O(log n) - Efficient searching in sorted arrays.
-Merge Sort - O(n log n) - Stable divide-and-conquer sorting algorithm.
+Format each alternative as:
+Algorithm Name - O(complexity) - One-line description
 
 Why Optimized Code is Better:
 Explain clearly what improvements were made compared to the original code.
@@ -119,12 +101,11 @@ Code to analyze:
         "messages": [
             {"role": "user", "content": prompt}
         ],
-        "max_tokens": 2000,
+        "max_tokens": 2500,
         "temperature": 0.2
     }
 
     try:
-
         response = requests.post(
             API_URL,
             headers={
@@ -141,12 +122,12 @@ Code to analyze:
             return clean_ai_output(ai_text)
 
         if "error" in result:
-            return "AI Error: " + str(result["error"])
+            return "[AI_SERVICE_ERROR] " + str(result["error"])
 
         return str(result)
 
     except Exception as e:
-        return "AI Error: " + str(e)
+        return "[AI_SERVICE_ERROR] " + str(e)
 
 
 # ---------------------------
@@ -162,7 +143,6 @@ def home():
 # ---------------------------
 @app.route("/analyze", methods=["POST"])
 def analyze():
-
     code = request.json.get("code", "")
 
     # Static Code Analysis

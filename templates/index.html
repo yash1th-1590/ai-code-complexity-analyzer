@@ -1,212 +1,675 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>AI Code Complexity Analyzer</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  h1 {
-    text-align: center;
-    font-size: 2.5rem;
-    color: #333;
-    margin-top: 20px;
-  }
-
-  textarea {
-    width: 80%;
-    max-width: 900px;
-    height: 220px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    margin-top: 20px;
-    resize: vertical;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  }
-
-  button {
-    padding: 12px 25px;
-    font-size: 16px;
-    margin-top: 15px;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background: #4f46e5;
-    color: white;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-
-  button:hover {
-    background: #4338ca;
-    transform: scale(1.05);
-  }
-
-  .result {
-    width: 80%;
-    max-width: 900px;
-    background: #ffffff;
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    white-space: pre-wrap;
-    font-size: 14px;
-    color: #333;
-    line-height: 1.6;
-  }
-
-  /* ---------- Headings styling ---------- */
-  .result h3 {
-    color: #111; /* dark color */
-    font-weight: bold;
-    text-decoration: underline;
-    margin-top: 12px;
-    margin-bottom: 5px;
-  }
-
-  .result p, .result ul {
-    margin: 4px 0;
-  }
-
-  /* ---------- Code block styling ---------- */
-  /* ---------- Make static analysis blocks compact ---------- */
-.result pre {
-  background: #f5f5f5;
-  padding: 6px 8px;        /* smaller padding */
-  border-radius: 6px;
-  overflow-x: auto;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;         /* slightly smaller font */
-  color: #1a1a1a;
-  margin: 2px 0;           /* less vertical spacing */
-  line-height: 1.3;        /* tighter lines */
-  white-space: pre-wrap;   /* wrap long lines */
-  word-break: break-word;
-}
-
-/* Reduce spacing between headings and code */
-.result h3 {
-  margin-top: 8px;
-  margin-bottom: 2px;
-  font-size: 14px;
-}
-.alt-algo {
-  color: black;
-  font-size: 1em;
-  font-weight: 500;
-}
-  footer {
-    margin-top: 40px;
-    color: #777;
-    font-size: 0.9rem;
-    text-align: center;
-  }
-
-  @media (max-width: 768px) {
-    textarea, .result {
-      width: 90%;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Code Complexity Analyzer | Intelligent Code Review</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-  }
-</style>
+
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+      --accent: #4f46e5;
+      --accent-gradient: linear-gradient(135deg, #4f46e5, #6366f1);
+      --code-bg: #f1f5f9;
+      --code-text: #1e293b;
+      --stat-bg: #f8fafc;
+      --alt-bg: #eef2ff;
+      --shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
+      --error-bg: #fee2e2;
+      --error-text: #dc2626;
+    }
+
+    body.dark {
+      --bg-primary: #0f172a;
+      --bg-card: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+      --accent: #818cf8;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+      --stat-bg: #0f172a;
+      --alt-bg: #2d3a5e;
+      --shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.3);
+      --error-bg: #2d1a1a;
+      --error-text: #f87171;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-section h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: var(--accent-gradient);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .logo-section p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    .theme-switch {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-switch i {
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      padding: 1.2rem 1.8rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card-header i {
+      font-size: 1.4rem;
+      color: var(--accent);
+    }
+
+    .card-header h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-body {
+      padding: 1.8rem;
+    }
+
+    .code-input {
+      width: 100%;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.2rem;
+      resize: vertical;
+      color: var(--code-text);
+      line-height: 1.5;
+    }
+
+    .code-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .analyze-btn {
+      background: var(--accent-gradient);
+      border: none;
+      padding: 0.85rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      border-radius: 40px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s;
+      margin-top: 1rem;
+    }
+
+    .analyze-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -8px var(--accent);
+    }
+
+    .analyze-btn:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+      margin-top: 1.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .metric-card {
+      background: var(--stat-bg);
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .metric-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .metric-icon {
+      float: right;
+      font-size: 1.5rem;
+      opacity: 0.5;
+      color: var(--accent);
+    }
+
+    .ai-content h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 1.2rem 0 0.6rem 0;
+      color: var(--accent);
+      border-left: 3px solid var(--accent);
+      padding-left: 0.8rem;
+    }
+
+    .ai-content h3:first-of-type {
+      margin-top: 0;
+    }
+
+    .ai-content p {
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+
+    .ai-content pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1rem;
+      border-radius: 16px;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      margin: 0.75rem 0;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .alternatives-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+
+    .alt-algo-card {
+      background: var(--stat-bg);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      border-left: 3px solid var(--accent);
+    }
+
+    .alt-algo-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent);
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+
+    .alt-algo-complexity {
+      display: inline-block;
+      background: var(--alt-bg);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: monospace;
+      color: var(--accent);
+    }
+
+    .alt-algo-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    .suggestions-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .suggestions-list li {
+      padding: 0.5rem 0 0.5rem 1.5rem;
+      position: relative;
+      color: var(--text-secondary);
+    }
+
+    .suggestions-list li:before {
+      content: "▹";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    .optimization-note {
+      background: var(--alt-bg);
+      padding: 0.75rem 1rem;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      margin: 0.5rem 0;
+      border-left: 3px solid var(--accent);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-placeholder {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.5rem;
+      justify-content: center;
+      color: var(--text-secondary);
+    }
+
+    .error-message {
+      background: var(--error-bg);
+      padding: 1rem;
+      border-radius: 16px;
+      color: var(--error-text);
+      border-left: 3px solid var(--error-text);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding: 1.5rem;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    hr {
+      border-color: var(--border-color);
+      margin: 1rem 0;
+    }
+  </style>
 </head>
 <body>
+<div class="container">
+  <div class="header">
+    <div class="logo-section">
+      <h1><i class="fas fa-brain"></i> AI Code Complexity Analyzer</h1>
+      <p>Intelligent algorithm detection · Big-O analysis · Smart optimizations</p>
+    </div>
+    <div class="theme-switch" id="themeToggle">
+      <i class="fas fa-moon"></i>
+      <span>Dark Mode</span>
+    </div>
+  </div>
 
-<h1>AI Code Complexity Analyzer</h1>
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-code"></i>
+      <h2>Paste Your Python Code</h2>
+    </div>
+    <div class="card-body">
+      <textarea id="codeInput" class="code-input" rows="8" placeholder="Give your Python code here"></textarea>
+      <div style="display: flex; justify-content: center;">
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeCode()">
+          <i class="fas fa-robot"></i>
+          <span>Analyze Code</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-<textarea id="code" placeholder="Paste your Python code here..."></textarea>
-<button onclick="analyze()">Analyze Code</button>
+  <div class="results-grid">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-chart-line"></i>
+        <h2>Static Metrics</h2>
+      </div>
+      <div class="card-body" id="staticResults">
+        <div class="empty-state">
+          <i class="fas fa-chart-simple" style="font-size: 2rem; opacity: 0.5;"></i>
+          <p style="margin-top: 0.5rem;">Click "Analyze" to see metrics</p>
+        </div>
+      </div>
+    </div>
 
-<h2>Static Analysis</h2>
-<div class="result" id="result">Your static analysis will appear here...</div>
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-star-of-life"></i>
+        <h2>AI Code Review</h2>
+      </div>
+      <div class="card-body ai-content" id="aiResults">
+        <div class="empty-state">
+          <i class="fas fa-microchip" style="font-size: 2rem; opacity: 0.5;"></i>
+          <p style="margin-top: 0.5rem;">AI analysis will appear here</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<h2>AI Code Review</h2>
-<div class="result" id="ai">AI suggestions and optimized code will appear here...</div>
-
-<footer>&copy; 2026 AI Code Analyzer</footer>
+  <footer>
+    <i class="fas fa-shield-alt"></i> Powered by Llama 3.1 · Preserves original algorithm logic
+  </footer>
+</div>
 
 <script>
-async function analyze() {
-  let code = document.getElementById("code").value;
+  const themeToggle = document.getElementById('themeToggle');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+  
+  function setTheme(isDark) {
+    if (isDark) {
+      document.body.classList.add('dark');
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+    } else {
+      document.body.classList.remove('dark');
+      themeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+    }
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
+  
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    setTheme(true);
+  } else if (savedTheme === 'light') {
+    setTheme(false);
+  } else {
+    setTheme(prefersDark.matches);
+  }
+  
+  themeToggle.addEventListener('click', () => {
+    setTheme(!document.body.classList.contains('dark'));
+  });
 
-  if (!code.trim()) {
-    alert("Please enter some code to analyze!");
-    return;
+  async function analyzeCode() {
+    const codeInput = document.getElementById('codeInput');
+    const code = codeInput.value;
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const staticDiv = document.getElementById('staticResults');
+    const aiDiv = document.getElementById('aiResults');
+
+    if (!code.trim()) {
+      alert('Please enter some Python code to analyze.');
+      return;
+    }
+
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerHTML = '<span class="loading-spinner"></span><span>Analyzing...</span>';
+    
+    staticDiv.innerHTML = `
+      <div class="loading-placeholder">
+        <i class="fas fa-spinner fa-pulse"></i>
+        <span>Computing metrics...</span>
+      </div>
+    `;
+    
+    aiDiv.innerHTML = `
+      <div class="loading-placeholder">
+        <i class="fas fa-spinner fa-pulse"></i>
+        <span>AI is reviewing your code...</span>
+      </div>
+    `;
+
+    try {
+      const response = await fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code })
+      });
+      const data = await response.json();
+
+      renderStaticMetrics(staticDiv, data.analysis || '');
+      
+      // Check for actual service errors using the new prefix
+      if (data.ai && data.ai.startsWith('[AI_SERVICE_ERROR]')) {
+        const errorMsg = data.ai.replace('[AI_SERVICE_ERROR]', '').trim();
+        aiDiv.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> AI Service Error: ${escapeHtml(errorMsg)}</div>`;
+      } else {
+        renderAIResponse(aiDiv, data.ai || 'No response from AI');
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      staticDiv.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Connection error: ${escapeHtml(error.message)}</div>`;
+      aiDiv.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Failed to fetch AI analysis. Make sure server is running on port 5000.</div>`;
+    } finally {
+      analyzeBtn.disabled = false;
+      analyzeBtn.innerHTML = '<i class="fas fa-robot"></i><span>Analyze Code</span>';
+    }
   }
 
-  try {
-    let response = await fetch("/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code })
+  function renderStaticMetrics(container, rawStatic) {
+    const lines = (rawStatic.match(/Total Lines:\s*(\d+)/i) || [])[1] || '0';
+    const loops = (rawStatic.match(/Loops:\s*(\d+)/i) || [])[1] || '0';
+    const conditions = (rawStatic.match(/Conditions:\s*(\d+)/i) || [])[1] || '0';
+    const functions = (rawStatic.match(/Functions:\s*(\d+)/i) || [])[1] || '0';
+
+    const metrics = [
+      { label: 'Total Lines', value: lines, icon: 'fa-file-lines' },
+      { label: 'Loops', value: loops, icon: 'fa-repeat' },
+      { label: 'Conditions', value: conditions, icon: 'fa-code-branch' },
+      { label: 'Functions', value: functions, icon: 'fa-cube' }
+    ];
+
+    let metricsHtml = `<div class="metrics-grid">`;
+    metrics.forEach(m => {
+      metricsHtml += `
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fas ${m.icon}"></i></div>
+          <div class="metric-label">${m.label}</div>
+          <div class="metric-value">${m.value}</div>
+        </div>
+      `;
     });
+    metricsHtml += `</div><hr><div style="font-size:0.75rem; color: var(--text-secondary);"><i class="fas fa-info-circle"></i> Static analysis provides structural hints. AI determines Big-O complexity.</div>`;
+    
+    container.innerHTML = metricsHtml;
+  }
 
-    let data = await response.json();
-
-    // ---------- Format Static Analysis ----------
-    let staticText = data.analysis || "No static analysis available.";
-
-    // Convert main sections to headings
-    staticText = staticText.replace(/Total Lines:/g, "<h3>Total Lines:</h3>");
-    staticText = staticText.replace(/Loops:/g, "<h3>Loops:</h3>");
-    staticText = staticText.replace(/Conditions:/g, "<h3>Conditions:</h3>");
-    staticText = staticText.replace(/Functions:/g, "<h3>Functions:</h3>");
-
-    // Wrap following lines in <pre> if they are not headings
-    staticText = staticText.replace(/<h3>(.*?)<\/h3>\s*([\s\S]*?)(?=<h3>|$)/g, (match, p1, p2) => {
-      let codePart = p2.trim() ? `<pre><code>${p2.trim()}</code></pre>` : '';
-      return `<h3>${p1}</h3>${codePart}`;
+  function renderAIResponse(container, rawText) {
+    let processed = rawText;
+    
+    const sections = ['Algorithm', 'Time Complexity', 'Suggestions', 'Optimization Type', 'Optimized Code', 'Alternative Algorithms', 'Why Optimized Code is Better'];
+    
+    sections.forEach(section => {
+      const regex = new RegExp(`(${section}):`, 'gi');
+      processed = processed.replace(regex, `\n<h3>${section}:</h3>\n`);
     });
-
-    document.getElementById("result").innerHTML = staticText;
-
-    // ---------- Format AI Response ----------
-    // ---------- Format AI Response ----------
-let aiText = data.ai || "";
-
-// Replace headings dynamically
-const headings = [
-  "Algorithm", "Time Complexity", "Suggestions", 
-  "Optimization Type", "Optimized Code", 
-  "Alternative Algorithms", "Why Optimized Code is Better"
-];
-
-headings.forEach(h => {
-  const regex = new RegExp(h + ":", "g");
-  aiText = aiText.replace(regex, `<h3>${h}:</h3>`);
-});
-
-// Wrap code blocks properly without removing any lines
-aiText = aiText.replace(/<h3>Optimized Code:<\/h3>\s*([\s\S]*?)(?=<h3>|$)/g, (match, p1) => {
-  return `<h3>Optimized Code:</h3><pre><code>${p1.trim()}</code></pre>`;
-});
-
-
-aiText = aiText.replace(
-  /(\d+\.\s*)(.+?)(\s*-\s*O\([^)]+\))/g,
-  (match, number, algoName, complexity) => {
-    return `${number}<span class="alt-algo">${algoName.trim()}</span>${complexity}`;
+    
+    processed = processed.replace(/<h3>Optimized Code:<\/h3>\s*([\s\S]*?)(?=<h3>|$)/gi, (match, codeContent) => {
+      let cleanCode = codeContent.trim();
+      cleanCode = cleanCode.replace(/^```(?:\w*)\n?/g, '').replace(/\n?```$/g, '');
+      return `<h3>Optimized Code:</h3><pre><code>${escapeHtml(cleanCode)}</code></pre>`;
+    });
+    
+    processed = processed.replace(/<h3>Suggestions:<\/h3>\s*([\s\S]*?)(?=<h3>|$)/gi, (match, suggestionBlock) => {
+      const lines = suggestionBlock.split('\n');
+      let items = [];
+      for (let line of lines) {
+        line = line.trim();
+        if (line.match(/^\d+\./)) {
+          let cleanLine = line.replace(/^\d+\.\s*/, '');
+          items.push(`<li>${escapeHtml(cleanLine)}</li>`);
+        } else if (line.length > 0 && !line.startsWith('<')) {
+          items.push(`<li>${escapeHtml(line)}</li>`);
+        }
+      }
+      if (items.length > 0) {
+        return `<h3>Suggestions:</h3><ul class="suggestions-list">${items.join('')}</ul>`;
+      }
+      return `<h3>Suggestions:</h3><p>${escapeHtml(suggestionBlock)}</p>`;
+    });
+    
+    processed = processed.replace(/<h3>Alternative Algorithms:<\/h3>([\s\S]*?)(?=<h3>|$)/gi, (match, altBlock) => {
+      const lines = altBlock.split('\n');
+      let cardsHtml = '<div class="alternatives-container">';
+      let found = false;
+      
+      for (let line of lines) {
+        line = line.trim();
+        if (!line) continue;
+        
+        let match = line.match(/^(\d+)\.\s*(.+?)\s*-\s*(O\([^)]+\))\s*-\s*(.+)$/i);
+        if (!match) {
+          match = line.match(/(.+?)\s*-\s*(O\([^)]+\))\s*-\s*(.+)/i);
+        }
+        
+        if (match) {
+          found = true;
+          let name, complexity, description;
+          if (match.length === 5) {
+            [, , name, complexity, description] = match;
+          } else {
+            [, name, complexity, description] = match;
+          }
+          cardsHtml += `
+            <div class="alt-algo-card">
+              <div>
+                <span class="alt-algo-name">${escapeHtml(name.trim())}</span>
+                <span class="alt-algo-complexity">${escapeHtml(complexity)}</span>
+              </div>
+              <div class="alt-algo-desc">${escapeHtml(description.trim())}</div>
+            </div>
+          `;
+        }
+      }
+      
+      cardsHtml += '</div>';
+      if (found) {
+        return `<h3>Alternative Algorithms:</h3>${cardsHtml}`;
+      }
+      return `<h3>Alternative Algorithms:</h3><p>${escapeHtml(altBlock)}</p>`;
+    });
+    
+    processed = processed.replace(/<h3>Optimization Type:<\/h3>\s*([^<]+?)(?=<h3>|$)/gi, (match, content) => {
+      return `<h3>Optimization Type:</h3><div class="optimization-note">${escapeHtml(content.trim())}</div>`;
+    });
+    
+    processed = processed.replace(/<h3>Why Optimized Code is Better:<\/h3>\s*([^<]+?)(?=<h3>|$)/gi, (match, content) => {
+      return `<h3>Why Optimized Code is Better:</h3><p>${escapeHtml(content.trim())}</p>`;
+    });
+    
+    processed = processed.replace(/<h3>Algorithm:<\/h3>\s*([^<]+?)(?=<h3>|$)/gi, (match, content) => {
+      return `<h3>Algorithm:</h3><p>${escapeHtml(content.trim())}</p>`;
+    });
+    
+    processed = processed.replace(/<h3>Time Complexity:<\/h3>\s*([^<]+?)(?=<h3>|$)/gi, (match, content) => {
+      return `<h3>Time Complexity:</h3><p><strong>${escapeHtml(content.trim())}</strong></p>`;
+    });
+    
+    processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    if (processed.trim() === '' || processed === rawText) {
+      processed = `<pre><code>${escapeHtml(rawText)}</code></pre>`;
+    }
+    
+    container.innerHTML = processed;
   }
-);
-// Set the AI div content
-document.getElementById("ai").innerHTML = aiText;
 
-  } catch (error) {
-    document.getElementById("ai").innerText = "Error fetching AI analysis: " + error;
-    document.getElementById("result").innerText = "";
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
-}
+
+  document.getElementById('codeInput').addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      analyzeCode();
+    }
+  });
 </script>
-
 </body>
 </html>
