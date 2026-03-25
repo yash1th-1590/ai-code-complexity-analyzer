@@ -1,62 +1,66 @@
 # AI Code Complexity Analyzer
 
-# Description
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
+[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-API-yellow.svg)](https://huggingface.co/)
+[![License](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
 
-AI Code Complexity Analyzer is a web-based tool that analyzes Python code to identify algorithms and estimate time complexity. The application performs static code analysis to detect loops, conditions, and functions, and uses AI to suggest optimized versions of the code.
+An intelligent web application that analyzes Python code for algorithmic complexity, provides AI-powered code reviews, and suggests optimizations while preserving the original algorithm logic.
 
-Tools like code complexity analyzers help developers understand how efficient or maintainable their code is by estimating metrics such as time complexity and structural difficulty. ([PyPI][1])
+![AI Code Complexity Analyzer Demo](https://via.placeholder.com/800x400?text=AI+Code+Complexity+Analyzer+Demo)
 
-# Features
+## 🚀 Features
 
-* Detects loops, conditional statements, and functions in Python code
-* Estimates time complexity such as O(n), O(n²), etc.
-* AI-powered suggestions for optimized code
-* Simple web interface for code analysis
-* Helps developers understand algorithm efficiency
+### 📊 Static Code Analysis
+- **Line Count**: Total lines of code
+- **Loop Detection**: Identifies `for` and `while` loops
+- **Conditional Statements**: Counts `if` statements
+- **Function Definitions**: Detects `def` keywords
 
-# Tech Stack
+### 🤖 AI-Powered Code Review
+- **Algorithm Identification**: Detects the algorithm used in the code
+- **Time Complexity Analysis**: Provides Big-O notation for algorithmic complexity
+- **Smart Suggestions**: Offers two meaningful improvements
+- **Optimization Type**: Explains the changes made for optimization
+- **Optimized Code**: Generates improved code preserving the same algorithm
+- **Alternative Algorithms**: Suggests better algorithms with complexity and descriptions
+- **Optimization Justification**: Explains why the optimized code is better
 
-* Python
-* Flask
-* HTML
-* CSS
-* JavaScript
-* Regex
-* Hugging Face API
+### 🎨 Modern UI Features
+- **Dark/Light Theme Toggle**: Personalize your viewing experience
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
+- **Code Syntax Highlighting**: Clean display of code blocks
+- **Structured Results**: Organized sections for easy reading
+- **Copy-Ready Code**: Easy to copy optimized code snippets
 
-# Installation
+## 🛠️ Tech Stack
 
-1. Clone the repository
-   git clone https://github.com/yash1th-1590/ai-code-complexity-analyzer.git
+### Backend
+- **Python 3.8+** - Core programming language
+- **Flask** - Web framework
+- **Requests** - API calls to Hugging Face
+- **Regex** - Pattern matching for static analysis
+- **python-dotenv** - Environment variable management
 
-2. Navigate to the project folder
-   cd ai-code-complexity-analyzer
+### Frontend
+- **HTML5** - Structure
+- **CSS3** - Styling with dark/light theme support
+- **JavaScript (ES6)** - Dynamic interactions and API integration
+- **Font Awesome** - Icons and visual elements
+- **Google Fonts (Inter)** - Modern typography
 
-3. Install required dependencies
-   pip install -r requirements.txt
+### AI Integration
+- **Hugging Face API** - Llama 3.1 8B Instruct model for code analysis
 
-4. Run the application
-   python app.py
+## 📋 Prerequisites
 
-# Usage
+- Python 3.8 or higher
+- Hugging Face API key ([Get one here](https://huggingface.co/settings/tokens))
+- Modern web browser (Chrome, Firefox, Safari, Edge)
 
-1. Start the Flask server.
-2. Open the application in your browser.
-3. Paste Python code into the input field.
-4. Click **Analyze**.
-5. View the estimated time complexity and optimization suggestions.
+## 🔧 Installation
 
-
-# Future Improvements
-
-* Support for more programming languages
-* Real-time code analysis
-* Better AI optimization suggestions
-* Improved UI/UX
-
-# Author
-
-Battu Yashwanth Reddy....
-GitHub: https://github.com/yash1th-1590
-
-[1]: https://pypi.org/project/code-complexity-analyzer/?utm_source=chatgpt.com "code-complexity-analyzer · PyPI"
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yash1th-1590/ai-code-complexity-analyzer.git
+cd ai-code-complexity-analyzer
