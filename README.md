@@ -7,7 +7,7 @@
 
 An intelligent web application that analyzes Python code for algorithmic complexity, provides AI-powered code reviews, and suggests optimizations while preserving the original algorithm logic.
 
-![AI Code Complexity Analyzer Demo](https://via.placeholder.com/800x400?text=AI+Code+Complexity+Analyzer+Demo)
+
 
 ## 🚀 Features
 
