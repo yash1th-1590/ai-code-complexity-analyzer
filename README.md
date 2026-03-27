@@ -6,15 +6,15 @@ An intelligent web application that analyzes Python code for algorithmic complex
 
 
 
-## 🚀 Features
+##  Features
 
-### 📊 Static Code Analysis
+###  Static Code Analysis
 - **Line Count**: Total lines of code
 - **Loop Detection**: Identifies `for` and `while` loops
 - **Conditional Statements**: Counts `if` statements
 - **Function Definitions**: Detects `def` keywords
 
-### 🤖 AI-Powered Code Review
+###  AI-Powered Code Review
 - **Algorithm Identification**: Detects the algorithm used in the code
 - **Time Complexity Analysis**: Provides Big-O notation for algorithmic complexity
 - **Smart Suggestions**: Offers two meaningful improvements
@@ -23,14 +23,14 @@ An intelligent web application that analyzes Python code for algorithmic complex
 - **Alternative Algorithms**: Suggests better algorithms with complexity and descriptions
 - **Optimization Justification**: Explains why the optimized code is better
 
-### 🎨 Modern UI Features
+###  Modern UI Features
 - **Dark/Light Theme Toggle**: Personalize your viewing experience
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - **Code Syntax Highlighting**: Clean display of code blocks
 - **Structured Results**: Organized sections for easy reading
 - **Copy-Ready Code**: Easy to copy optimized code snippets
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Backend
 - **Python 3.8+** - Core programming language
@@ -49,13 +49,13 @@ An intelligent web application that analyzes Python code for algorithmic complex
 ### AI Integration
 - **Hugging Face API** - Llama 3.1 8B Instruct model for code analysis
 
-## 📋 Prerequisites
+##  Prerequisites
 
 - Python 3.8 or higher
 - Hugging Face API key ([Get one here](https://huggingface.co/settings/tokens))
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 
-## 🔧 Installation
+##  Installation
 
 ### 1. Clone the Repository
 ```bash
