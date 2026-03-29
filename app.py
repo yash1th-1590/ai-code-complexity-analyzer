@@ -6,34 +6,28 @@ import os
 
 app = Flask(__name__)
 load_dotenv()
-# API configuration
+
 HF_API_KEY = os.getenv("HF_API_KEY")
 API_URL = "https://router.huggingface.co/v1/chat/completions"
 
 
-# ---------------------------
-# Clean AI Output - PRESERVE FORMATTING
-# ---------------------------
+
 def clean_ai_output(ai_text):
-    # Only remove minimal unwanted formatting, preserve structure
-    # Remove excessive markdown code block markers but keep content
+    
     ai_text = ai_text.replace("```python", "").replace("```", "")
     
-    # Remove any stray asterisks that might be formatting but keep meaningful ones
+    
     ai_text = re.sub(r'\*\*([^*]+)\*\*', r'\1', ai_text)
     
-    # Remove any repeated prompt rules if AI echoes them (rare)
+    
     ai_text = re.sub(r'Rules:.*?Code to analyze:', '', ai_text, flags=re.DOTALL)
     
-    # Trim whitespace
+   
     ai_text = ai_text.strip()
     
     return ai_text
 
 
-# ---------------------------
-# Ask AI for Code Review
-# ---------------------------
 def ask_ai(code):
     prompt = f"""
 You are an expert programming assistant.
@@ -130,22 +124,18 @@ Code to analyze:
         return "[AI_SERVICE_ERROR] " + str(e)
 
 
-# ---------------------------
-# Home Page
-# ---------------------------
+
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# ---------------------------
-# Code Analysis API
-# ---------------------------
+
 @app.route("/analyze", methods=["POST"])
 def analyze():
     code = request.json.get("code", "")
 
-    # Static Code Analysis
+   
     total_lines = len(code.split("\n"))
     loops = len(re.findall(r'\b(for|while)\b', code))
     conditions = len(re.findall(r'\bif\b', code))
@@ -158,7 +148,7 @@ Conditions: {conditions}
 Functions: {functions}
 """
 
-    # AI Code Review
+    
     ai_result = ask_ai(code)
 
     return jsonify({
@@ -167,8 +157,6 @@ Functions: {functions}
     })
 
 
-# ---------------------------
-# Run Server
-# ---------------------------
+
 if __name__ == "__main__":
     app.run(debug=True)
