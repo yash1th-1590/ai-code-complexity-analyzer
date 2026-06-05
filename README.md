@@ -52,7 +52,7 @@ An intelligent web application that analyzes Python code for algorithmic complex
 ##  Prerequisites
 
 - Python 3.8 or higher
-- Hugging Face API key ([Get one here](https://huggingface.co/settings/tokens))
+- Hugging Face API key
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 
 ##  Installation
